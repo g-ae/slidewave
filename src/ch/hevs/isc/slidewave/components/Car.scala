@@ -1,4 +1,4 @@
-package ch.hevs.gdx2d.slidewave.components
+package ch.hevs.isc.slidewave.components
 
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics

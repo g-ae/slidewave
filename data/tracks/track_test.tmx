@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="15" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="spritesheet_tiles.tsx"/>
+ <layer id="1" name="Calque de Tuiles 1" width="15" height="11" offsetx="418" offsety="244.667">
+  <data encoding="csv">
+150,186,186,38,186,307,186,78,60,0,0,0,0,0,0,
+203,95,184,184,184,271,184,77,59,0,0,0,0,0,0,
+203,167,0,0,0,0,150,76,167,0,0,0,0,0,0,
+280,244,0,0,0,0,203,95,131,0,0,0,0,0,0,
+280,244,0,0,0,0,203,167,0,0,0,0,0,0,0,
+280,171,258,258,258,186,76,6,0,0,0,0,0,0,0,
+226,261,261,261,261,184,184,5,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>
