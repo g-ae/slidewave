@@ -6,14 +6,17 @@ import ch.hevs.gdx2d.desktop.physics.DebugRenderer
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld
 import ch.hevs.isc.slidewave.components.Car
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.math.Vector2
 
 object Slidewave extends App {
+    var screenWidth = 1920
+    var screnHeight = 1080
     new SlidewaveWindow
 }
 
-class SlidewaveWindow extends PortableApplication(1920, 1080){
+class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screnHeight) {
     var dbgRenderer: DebugRenderer = null
     val world = PhysicsWorld.getInstance()
     var c1: Car = null
@@ -32,9 +35,8 @@ class SlidewaveWindow extends PortableApplication(1920, 1080){
             tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
 
         // Our car
-        c1 = new Car(30, 70, new Vector2(100, 100), Math.PI.toFloat, 4, 20, 15)
+        c1 = new Car(30, 70, new Vector2(100, 100), Math.PI.toFloat, 4, 20, 30)
     }
-
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
         g.zoom(tileManager.zoom)
@@ -71,8 +73,12 @@ class SlidewaveWindow extends PortableApplication(1920, 1080){
         c1.draw(g)
         dbgRenderer.render(world, g.getCamera.combined)
 
-        // TODO: gérer affichage correct des FPS
-        g.drawFPS()
-        g.drawSchoolLogo()
+        // display FPS
+        val visibleH   = g.getCamera.viewportHeight * g.getCamera.zoom      // hauteur totale du monde visible
+        val bottomY    = g.getCamera.position.y - (visibleH / 2)            // coord. Y du bas de la vue
+        val topY       = g.getCamera.position.y + (visibleH / 2)            // coord. Y du haut de la vue
+        g.setColor(Color.WHITE)
+        g.drawString(5 , topY - 5, "FPS: " + Gdx.graphics.getFramesPerSecond())
+
     }
 }
