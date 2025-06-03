@@ -23,13 +23,15 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
     var tileManager: TileManager = null
 
     override def onInit(): Unit = {
-        setTitle("Slidewave alpha")
+        setTitle("slidewave")
+
         // No gravity in this world
         world.setGravity(new Vector2(0, 0))
+
         dbgRenderer = new DebugRenderer
 
         // TileManager
-        tileManager = new TileManager("data/tracks/track_test.tmx")
+        tileManager = new TileManager("data/tracks/track_test2.tmx")
 
         new PhysicsScreenBoundaries(tileManager.tiledLayer.getWidth * tileManager.tiledLayer.getTileWidth,
             tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
@@ -74,11 +76,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         dbgRenderer.render(world, g.getCamera.combined)
 
         // display FPS
-        val visibleH   = g.getCamera.viewportHeight * g.getCamera.zoom      // hauteur totale du monde visible
-        val bottomY    = g.getCamera.position.y - (visibleH / 2)            // coord. Y du bas de la vue
-        val topY       = g.getCamera.position.y + (visibleH / 2)            // coord. Y du haut de la vue
-        g.setColor(Color.WHITE)
-        g.drawString(5 , topY - 5, "FPS: " + Gdx.graphics.getFramesPerSecond())
-
+        g.setColor(Color.BLACK)
+        g.drawString((g.getCamera.position.x - Slidewave.screenWidth /2) + 5, (g.getCamera.position.y + Slidewave.screnHeight / 2) - 5, "FPS: " + Gdx.graphics.getFramesPerSecond())
     }
 }
