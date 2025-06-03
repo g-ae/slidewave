@@ -1,7 +1,7 @@
 package ch.hevs.isc.slidewave
 
 import ch.hevs.gdx2d.lib.GdxGraphics
-import ch.hevs.isc.slidewave.components.Car
+import ch.hevs.isc.slidewave.components.{Car, Wheel}
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -10,11 +10,13 @@ import com.badlogic.gdx.math.{Rectangle, Vector2}
 
 import scala.collection.mutable.ArrayBuffer
 
-class TileManager(tiledFileName: String, val zoom: Float = 1f) {
-  var tiledMap: TiledMap = new TmxMapLoader().load(tiledFileName)
+object TileManager {
+  var tiledMap: TiledMap = new TmxMapLoader().load("data/tracks/track_test2.tmx")
   var tiledLayerCheckPoint: MapLayer = tiledMap.getLayers.get("checkpoints")
   var tiledLayerBG: TiledMapTileLayer = tiledMap.getLayers.get("bg").asInstanceOf[TiledMapTileLayer]
   var tiledMapRenderer: OrthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+
+  val zoom = 1f
 
   def getStartingPoint: Vector2 = {
     /*
@@ -44,8 +46,7 @@ class TileManager(tiledFileName: String, val zoom: Float = 1f) {
   }
   def getCheckpoints(withFinishLine: Boolean = false): Array[Rectangle] = {
     val checkpoints = new ArrayBuffer[Rectangle]()
-    if (withFinishLine) checkpoints += getFinishLine
-    var currentCheckpoint: Int = 0
+    var currentCheckpoint: Int = if (withFinishLine) 0 else 1
     while (true) {
       val obj = getCheckpoint(currentCheckpoint)
       if (obj == null) return checkpoints.toArray
@@ -56,4 +57,19 @@ class TileManager(tiledFileName: String, val zoom: Float = 1f) {
     checkpoints.toArray
   }
   def isCarOverCheckpoint(car: Car, cp: Rectangle): Boolean = car.carRectangle.overlaps(cp)
+  def getTileAt(x: Float, y: Float): TiledMapTileLayer.Cell = {
+    tiledLayerBG.getCell(
+      Math.floor(x / tiledLayerBG.getTileWidth).toInt,
+      Math.floor(y / tiledLayerBG.getTileHeight).toInt
+    )
+  }
+  def isWheelInTrack(wheel: Wheel): Boolean = {
+    val tile = getTileAt(wheel.wheel.getBodyPosition.x, wheel.wheel.getBodyPosition.y)
+    tile != null && tile.getTile.getId != 49
+  }
+  def drawCurrentTile(g: GdxGraphics, wheel: Wheel): Unit = {
+    val tile = getTileAt(wheel.wheel.getBodyPosition.x, wheel.wheel.getBodyPosition.y)
+    if (tile == null) return
+    g.drawFilledCircle(tile.getTile.getOffsetX, tile.getTile.getOffsetY, 10f, Color.PINK)
+  }
 }

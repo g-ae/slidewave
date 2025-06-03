@@ -20,7 +20,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
     var dbgRenderer: DebugRenderer = null
     val world = PhysicsWorld.getInstance()
     var car: Car = null
-    var tileManager: TileManager = null
 
     override def onInit(): Unit = {
         setTitle("Slidewave")
@@ -30,23 +29,20 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         dbgRenderer = new DebugRenderer
 
-        // TileManager
-        tileManager = new TileManager("data/tracks/track_test.tmx")
-
-        new PhysicsScreenBoundaries(tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth,
-            tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
+        new PhysicsScreenBoundaries(TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth,
+            TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight)
 
         // Our car
-        car = new Car(30, 70, tileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
+        car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
-        g.zoom(tileManager.zoom)
-        g.moveCamera(car.carbox.getBodyPosition.x, car.carbox.getBodyPosition.y, tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth, tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
+        g.zoom(TileManager.zoom)
+        g.moveCamera(car.carbox.getBodyPosition.x, car.carbox.getBodyPosition.y, TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth, TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight)
 
-        tileManager.tiledMapRenderer.setView(g.getCamera)
-        tileManager.tiledMapRenderer.render()
-        tileManager.drawCheckpoints(g)
+        TileManager.tiledMapRenderer.setView(g.getCamera)
+        TileManager.tiledMapRenderer.render()
+        TileManager.drawCheckpoints(g)
 
         // Physics update
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
@@ -69,6 +65,8 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         car.update(Gdx.graphics.getDeltaTime)
         car.draw(g)
         dbgRenderer.render(world, g.getCamera.combined)
+
+        TileManager.drawCurrentTile(g, car.wheels(0))
 
         // display FPS
         g.setColor(Color.BLACK)

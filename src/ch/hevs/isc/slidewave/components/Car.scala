@@ -4,6 +4,7 @@ import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
+import ch.hevs.isc.slidewave.TileManager
 import com.badlogic.gdx.math.{Rectangle, Vector2}
 import com.badlogic.gdx.graphics.Color
 
@@ -108,12 +109,13 @@ class Car(width: Float,
 
     // Appliquer cette force à chaque roue
     for (w <- getPoweredWheels) {
+      val onTrack = TileManager.isWheelInTrack(w)
       w.body.applyForce(
         w.body.getWorldVector(
           new Vector2(
             forceVector.x,
             forceVector.y
-          )
+          ).scl(if (onTrack) 1f else 0.2f)
         ),
         w.body.getWorldCenter, true)
     }
