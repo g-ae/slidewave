@@ -1,6 +1,7 @@
 package ch.hevs.isc.slidewave
 
 import ch.hevs.gdx2d.lib.GdxGraphics
+import ch.hevs.isc.slidewave.components.Car
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
@@ -23,13 +24,17 @@ class TileManager(tiledFileName: String, val zoom: Float = 1f) {
     val prop = tiledLayerCheckPoint.getObjects.get("sp1").getProperties
     new Vector2(prop.get("x").asInstanceOf[Float], prop.get("y").asInstanceOf[Float])
   }
-
   def getFinishLine: Rectangle = getCheckpoint(0)
-  def drawFinishLine(g: GdxGraphics): Unit = {
-    g.setColor(Color.RED)
-    val rect = getFinishLine
-    g.drawFilledRectangle(rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width, rect.height, 0)
+  def drawCheckpoint(g: GdxGraphics, checkpoint: Rectangle): Unit = {
+    // todo: isCarOverCheckpoint trouver moyen de donner la voiture
+    g.setColor(/*if (isCarOverCheckpoint(, checkpoint)) Color.RED else */Color.BLUE)
+    g.drawFilledRectangle(checkpoint.x + checkpoint.width / 2, checkpoint.y + checkpoint.height / 2, checkpoint.width, checkpoint.height, 0)
   }
+  def drawCheckpoint(g: GdxGraphics, checkpoint: Int): Unit = {
+    val rect = getCheckpoint(checkpoint)
+    if (rect != null) drawCheckpoint(g, rect)
+  }
+  def drawCheckpoints(g: GdxGraphics): Unit = for (r <- getCheckpoints(true)) drawCheckpoint(g, r)
   def getCheckpoint(i: Int): Rectangle = {
     val obj = tiledLayerCheckPoint.getObjects.get(s"c$i")
     if (obj == null) return null
@@ -50,4 +55,5 @@ class TileManager(tiledFileName: String, val zoom: Float = 1f) {
     }
     checkpoints.toArray
   }
+  def isCarOverCheckpoint(car: Car, cp: Rectangle): Boolean = car.carRectangle.overlaps(cp)
 }

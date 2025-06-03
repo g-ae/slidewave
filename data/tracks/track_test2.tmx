@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="25" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="25" height="20" tilewidth="128" tileheight="128" infinite="0" nextlayerid="3" nextobjectid="2">
  <tileset firstgid="1" source="spritesheet_tiles.tsx"/>
- <layer id="1" name="Circuit Principal" width="25" height="20">
+ <layer id="1" name="bg" width="25" height="20">
   <data encoding="csv">
 49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,
-49,49,150,186,186,1073742095,186,186,186,186,186,186,186,186,186,186,186,186,186,2147483798,49,49,49,49,49,
+49,49,150,186,186,307,186,186,186,186,186,186,186,186,186,186,186,186,186,2147483798,49,49,49,49,49,
 49,49,203,95,184,271,184,2147483743,95,184,184,184,184,184,2147483743,95,184,184,2147483743,167,49,49,49,49,49,
 49,49,280,244,49,49,49,203,167,49,49,49,49,49,203,167,49,49,2147483815,167,49,49,49,49,49,
 49,49,280,244,49,49,49,203,167,49,49,49,49,49,203,167,49,49,2147483815,167,49,49,49,49,49,
@@ -25,4 +25,9 @@
 49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49,49
 </data>
  </layer>
+ <objectgroup id="2" name="checkpoints">
+  <object id="1" name="sp1" type="spawn" x="577.333" y="209.333">
+   <point/>
+  </object>
+ </objectgroup>
 </map>

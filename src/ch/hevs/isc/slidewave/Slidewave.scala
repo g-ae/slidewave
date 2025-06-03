@@ -19,11 +19,11 @@ object Slidewave extends App {
 class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
     var dbgRenderer: DebugRenderer = null
     val world = PhysicsWorld.getInstance()
-    var c1: Car = null
+    var car: Car = null
     var tileManager: TileManager = null
 
     override def onInit(): Unit = {
-        setTitle("slidewave")
+        setTitle("Slidewave")
 
         // No gravity in this world
         world.setGravity(new Vector2(0, 0))
@@ -37,44 +37,37 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
 
         // Our car
-        c1 = new Car(30, 70, tileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
+        car = new Car(30, 70, tileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
         g.zoom(tileManager.zoom)
-        g.moveCamera(c1.carbox.getBodyPosition.x, c1.carbox.getBodyPosition.y, tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth, tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
+        g.moveCamera(car.carbox.getBodyPosition.x, car.carbox.getBodyPosition.y, tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth, tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
 
         tileManager.tiledMapRenderer.setView(g.getCamera)
         tileManager.tiledMapRenderer.render()
-        tileManager.drawFinishLine(g)
-        tileManager.getCheckpoints()
+        tileManager.drawCheckpoints(g)
 
         // Physics update
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
 
-        /**
-         * Move the car according to key presses
-         */
-        c1.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)
-        c1.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)
+        // Move the car according to key presses
+        car.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)
+        car.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)
 
-        /**
-         * Turn the car according to key presses
-         */
+        // Turn the car according to key presses
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
-            c1.steer_left = true
-            c1.steer_right = false
+            car.steer_left = true
+            car.steer_right = false
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
+            car.steer_right = true
+            car.steer_left = false
+        } else {
+            car.steer_left = false
+            car.steer_right = false
         }
-        else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
-            c1.steer_right = true
-            c1.steer_left = false
-        }
-        else {
-            c1.steer_left = false
-            c1.steer_right = false
-        }
-        c1.update(Gdx.graphics.getDeltaTime)
-        c1.draw(g)
+        car.update(Gdx.graphics.getDeltaTime)
+        car.draw(g)
         dbgRenderer.render(world, g.getCamera.combined)
 
         // display FPS

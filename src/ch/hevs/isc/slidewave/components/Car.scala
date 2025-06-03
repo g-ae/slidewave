@@ -4,8 +4,9 @@ import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
-import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.{Rectangle, Vector2}
 import com.badlogic.gdx.graphics.Color
+
 import scala.collection.mutable.ArrayBuffer
 
 class Car(width: Float,
@@ -27,13 +28,13 @@ class Car(width: Float,
   val carbox: PhysicsBox = new PhysicsBox("carCenter", position, width, length, angle)
   carbox.setCollisionGroup(-1)
   val wheels = new ArrayBuffer[Wheel]()
+  var carRectangle: Rectangle = new Rectangle(position.x, position.y, width, length)
   /**
-   * How the car energy is disspated when no longer accelerating.
+   * How the car energy is dissipated when no longer accelerating.
    * 0 doesn't brake
    * 1 stop very quickly
    */
   val slowingFactor: Float = 0.7f
-
   val wheelOffset = new Vector2(25,35)
 
   // front left
@@ -65,6 +66,9 @@ class Car(width: Float,
     // 1. Kill sideways velocity TODO: may change for future drifting
     for (w <- wheels) w.killSidewaysVelocity()
 
+    // Update car rectangle (for checkpoints)
+    carRectangle.set(carbox.getBodyPosition.x, carbox.getBodyPosition.y, width, length)
+
     // 2. Set wheel angle
     // Calculate change in wheel angle for this update -> get smooth transition
     val change: Float = this.maxSteerAngle * deltaTime * 4
@@ -92,7 +96,7 @@ class Car(width: Float,
       baseVector = new Vector2(0,0)
 
       // Arrêter la voiture si va trop lentement
-      if (this.getSpeedKMH < 4) this.setSpeed(0)
+      if (this.getSpeedKMH < 1.5f) this.setSpeed(0)
       else {
         if (this.getLocalVelocity.y < 0) baseVector = new Vector2(0, slowingFactor)
         else if (this.getLocalVelocity.y > 0) baseVector = new Vector2(0, -slowingFactor)
@@ -118,11 +122,11 @@ class Car(width: Float,
     // dessiner les roues
     for (w <- wheels) w.draw(g)
 
+    // dessiner image voiture
     val pos = carbox.getBodyPosition
     g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
 
-    val v = getLocalVelocity.scl(100)
-    g.setColor(Color.BLACK)
-    g.drawLine(100, 100, 100 + v.x, 100+ v.y)
+    // dessiner debug
+    // g.drawFilledCircle(pos.x, pos.y, 10f, Color.BLUE)
   }
 }
