@@ -1,11 +1,11 @@
 package ch.hevs.isc.slidewave.components
 
+import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.graphics.Color
-
 import scala.collection.mutable.ArrayBuffer
 
 class Car(width: Float,
@@ -117,6 +117,7 @@ class Car(width: Float,
   override def draw(g: GdxGraphics): Unit = {
     val pos = carbox.getBodyPosition
     g.drawFilledCircle(pos.x, pos.y, 10, Color.BLUE)
+    g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
 
     val v = getLocalVelocity.scl(100)
     g.setColor(Color.BLACK)

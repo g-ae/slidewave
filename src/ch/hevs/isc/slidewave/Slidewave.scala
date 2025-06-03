@@ -37,7 +37,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
 
         // Our car
-        c1 = new Car(30, 70, new Vector2(100, 100), Math.PI.toFloat, 4, 20, 30)
+        c1 = new Car(30, 70, new Vector2(675, 2290), (Math.PI/2).toFloat, 4, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
