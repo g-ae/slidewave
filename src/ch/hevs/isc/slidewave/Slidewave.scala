@@ -31,18 +31,18 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         dbgRenderer = new DebugRenderer
 
         // TileManager
-        tileManager = new TileManager("data/tracks/track_test2.tmx")
+        tileManager = new TileManager("data/tracks/track_test.tmx")
 
-        new PhysicsScreenBoundaries(tileManager.tiledLayer.getWidth * tileManager.tiledLayer.getTileWidth,
-            tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
+        new PhysicsScreenBoundaries(tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth,
+            tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
 
         // Our car
-        c1 = new Car(30, 70, new Vector2(675, 2290), (Math.PI/2).toFloat, 3, 30, 30)
+        c1 = new Car(30, 70, tileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
         g.zoom(tileManager.zoom)
-        g.moveCamera(c1.carbox.getBodyPosition.x, c1.carbox.getBodyPosition.y, tileManager.tiledLayer.getWidth * tileManager.tiledLayer.getTileWidth, tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
+        g.moveCamera(c1.carbox.getBodyPosition.x, c1.carbox.getBodyPosition.y, tileManager.tiledLayerBG.getWidth * tileManager.tiledLayerBG.getTileWidth, tileManager.tiledLayerBG.getHeight * tileManager.tiledLayerBG.getTileHeight)
 
         tileManager.tiledMapRenderer.setView(g.getCamera)
         tileManager.tiledMapRenderer.render()
