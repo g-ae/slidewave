@@ -32,7 +32,7 @@ class Car(width: Float,
    * 0 doesn't brake
    * 1 stop very quickly
    */
-  val slowingFactor: Float = 0.5f
+  val slowingFactor: Float = 0.7f
 
   val wheelOffset = new Vector2(25,35)
 
@@ -86,7 +86,7 @@ class Car(width: Float,
       // en train de freiner mais on avance tjrs, appliquer force de freinage
       if (this.getLocalVelocity.y < 0) baseVector = new Vector2(0, 1.3f)
       // reculer -> moins de force appliquée
-      else if (getSpeedKMH < maxSpeed) baseVector = new Vector2(0, 0.2f)
+      else if (getSpeedKMH < maxSpeed) baseVector = new Vector2(0, 0.3f)
     } else {
       // on accelere ni freine pas, appliquer frein moteur
       baseVector = new Vector2(0,0)

@@ -33,7 +33,7 @@ class Wheel(
     // la roue pourra changer de sens (roues avant sur voiture lambda)
     val jointdef: RevoluteJointDef = new RevoluteJointDef
     jointdef.initialize(car.carbox.getBody, this.body, this.body.getWorldCenter)
-    jointdef.enableMotor = false // we control wheel's angle manually
+    jointdef.enableMotor = false
     world.createJoint(jointdef)
   } else {
     val jointdef: PrismaticJointDef = new PrismaticJointDef
@@ -49,8 +49,25 @@ class Wheel(
    * @param angle
    */
   def setAngle(angle: Float): Unit = {
-    wheelAngle = angle
-    body.setTransform(body.getPosition, car.carbox.getBodyAngle + Math.toRadians(angle).toFloat)
+    val velocity = body.getLinearVelocity
+    val speed = math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
+
+    // Paramètres de friction
+    val maxAngle = Math.toRadians(30).toFloat  // angle max à vitesse nulle
+    val speedThreshold = 10f                   // vitesse où la friction commence
+    val frictionFactor = 0.8f                  // intensité de la friction (0-1)
+
+    // Calcul de la réduction d'angle basée sur la vitesse
+    val speedRatio = math.min(speed / speedThreshold, 1f)
+    val angleReduction = speedRatio * frictionFactor
+    val effectiveMaxAngle = maxAngle * (1f - angleReduction)
+
+    // Limiter l'angle cible
+    val clampedAngle = math.max(-effectiveMaxAngle,
+      math.min(effectiveMaxAngle, Math.toRadians(angle).toFloat)).toFloat
+
+    wheelAngle = Math.toDegrees(clampedAngle).toFloat
+    body.setTransform(body.getPosition.x, body.getPosition.y, car.carbox.getBodyAngle + clampedAngle)
   }
 
   def getAngle: Float = wheelAngle
@@ -78,7 +95,6 @@ class Wheel(
 
   def draw(g: GdxGraphics): Unit = {
     val pos = wheel.getBodyPosition
-    println(car.carbox.getBodyAngle, getAngle)
     g.drawFilledRectangle(pos.x, pos.y, length / 2, width, Math.toDegrees(car.carbox.getBodyAngle).toFloat + 90f + getAngle, Color.BLACK)
   }
 }
