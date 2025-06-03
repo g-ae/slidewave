@@ -115,8 +115,10 @@ class Car(width: Float,
     }
   }
   override def draw(g: GdxGraphics): Unit = {
+    // dessiner les roues
+    for (w <- wheels) w.draw(g)
+
     val pos = carbox.getBodyPosition
-    g.drawFilledCircle(pos.x, pos.y, 10, Color.BLUE)
     g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
 
     val v = getLocalVelocity.scl(100)

@@ -11,12 +11,12 @@ import com.badlogic.gdx.{Gdx, Input}
 import com.badlogic.gdx.math.Vector2
 
 object Slidewave extends App {
-    var screenWidth = 1920
-    var screnHeight = 1080
+    val screenWidth = 1920
+    val screenHeight = 1080
     new SlidewaveWindow
 }
 
-class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screnHeight) {
+class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
     var dbgRenderer: DebugRenderer = null
     val world = PhysicsWorld.getInstance()
     var c1: Car = null
@@ -37,7 +37,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             tileManager.tiledLayer.getHeight * tileManager.tiledLayer.getTileHeight)
 
         // Our car
-        c1 = new Car(30, 70, new Vector2(675, 2290), (Math.PI/2).toFloat, 4, 30, 30)
+        c1 = new Car(30, 70, new Vector2(675, 2290), (Math.PI/2).toFloat, 1, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
@@ -77,6 +77,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         // display FPS
         g.setColor(Color.BLACK)
-        g.drawString((g.getCamera.position.x - Slidewave.screenWidth /2) + 5, (g.getCamera.position.y + Slidewave.screnHeight / 2) - 5, "FPS: " + Gdx.graphics.getFramesPerSecond())
+        g.drawString((g.getCamera.position.x - Slidewave.screenWidth /2) + 5, (g.getCamera.position.y + Slidewave.screenHeight / 2) - 5, "FPS: " + Gdx.graphics.getFramesPerSecond)
     }
 }
