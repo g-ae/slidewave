@@ -46,6 +46,8 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         tileManager.tiledMapRenderer.setView(g.getCamera)
         tileManager.tiledMapRenderer.render()
+        tileManager.drawFinishLine(g)
+        tileManager.getCheckpoints()
 
         // Physics update
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
