@@ -5,8 +5,8 @@ import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
 import ch.hevs.isc.slidewave.TileManager
-import com.badlogic.gdx.math.{Rectangle, Vector2}
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.{Polygon, Rectangle, Vector2}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -29,7 +29,17 @@ class Car(width: Float,
   val carbox: PhysicsBox = new PhysicsBox("carCenter", position, width, length, angle)
   carbox.setCollisionGroup(-1)
   val wheels = new ArrayBuffer[Wheel]()
-  var carRectangle: Rectangle = new Rectangle(position.x, position.y, width, length)
+  val carPolygon = new Polygon(Array(
+    -width/2, -length/2,   // bottom-left
+    width/2, -length/2,   // bottom-right
+    width/2,  length/2,   // top-right
+    -width/2,  length/2    // top-left
+  ))
+  /**
+   * Last checkpoint that the car crossed, -1 = didn't go through start yet
+   */
+  var passedCheckpoints = 0
+
   /**
    * How the car energy is dissipated when no longer accelerating.
    * 0 doesn't brake
@@ -65,10 +75,11 @@ class Car(width: Float,
    */
   def update(deltaTime: Float): Unit = {
     // 1. Kill sideways velocity TODO: may change for future drifting
-    for (w <- wheels) w.killSidewaysVelocity()
+    for (w <- wheels) if (!w.powered || TileManager.isWheelInTrack(w)) w.killSidewaysVelocity()
 
     // Update car rectangle (for checkpoints)
-    carRectangle.set(carbox.getBodyPosition.x, carbox.getBodyPosition.y, width, length)
+    carPolygon.setPosition(carbox.getBodyPosition.x, carbox.getBodyPosition.y)
+    carPolygon.setRotation(carbox.getBodyAngleDeg)
 
     // 2. Set wheel angle
     // Calculate change in wheel angle for this update -> get smooth transition
@@ -110,14 +121,14 @@ class Car(width: Float,
     // Appliquer cette force à chaque roue
     for (w <- getPoweredWheels) {
       val onTrack = TileManager.isWheelInTrack(w)
-      w.body.applyForce(
-        w.body.getWorldVector(
+      w.wheelbox.getBody.applyForce(
+        w.wheelbox.getBody.getWorldVector(
           new Vector2(
             forceVector.x,
             forceVector.y
           ).scl(if (onTrack) 1f else 0.2f)
         ),
-        w.body.getWorldCenter, true)
+        w.wheelbox.getBody.getWorldCenter, true)
     }
   }
   override def draw(g: GdxGraphics): Unit = {
@@ -127,8 +138,22 @@ class Car(width: Float,
     // dessiner image voiture
     val pos = carbox.getBodyPosition
     g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
+  }
 
-    // dessiner debug
-    // g.drawFilledCircle(pos.x, pos.y, 10f, Color.BLUE)
+  def wentOverCheckpoint(i: Int): Unit = {
+    if (i == 0 && passedCheckpoints == TileManager.checkpoints.length) {
+      // lap completed
+      passedCheckpoints = 1
+      println("lap completed")
+      // todo: lap timer
+      return
+    }
+    if (i == passedCheckpoints) {
+      // bon chemin !
+      passedCheckpoints += 1
+    } else {
+      // AHHHHH checkpoint loupé / sens inverse
+      println("lap not counted")
+    }
   }
 }

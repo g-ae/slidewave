@@ -26,18 +26,17 @@ class Wheel(
   val carPos: Vector2 = car.carbox.getBody.getWorldPoint(x)
 
   // créer une physique pour la roue
-  val wheel: PhysicsBox = new PhysicsBox("wheel", PhysicsConstants.coordMetersToPixels(carPos), width, length /2, car.carbox.getBodyAngle)
-  val body = wheel.getBody
+  val wheelbox: PhysicsBox = new PhysicsBox("wheel", PhysicsConstants.coordMetersToPixels(carPos), width, length /2, car.carbox.getBodyAngle)
 
   if (revolving) { // create ar evoluting joint to connect wheel to body
     // la roue pourra changer de sens (roues avant sur voiture lambda)
     val jointdef: RevoluteJointDef = new RevoluteJointDef
-    jointdef.initialize(car.carbox.getBody, this.body, this.body.getWorldCenter)
+    jointdef.initialize(car.carbox.getBody, wheelbox.getBody, wheelbox.getBody.getWorldCenter)
     jointdef.enableMotor = false
     world.createJoint(jointdef)
   } else {
     val jointdef: PrismaticJointDef = new PrismaticJointDef
-    jointdef.initialize(car.carbox.getBody, this.body, this.body.getWorldCenter, new Vector2(1,0)) // euhhh g pas compri
+    jointdef.initialize(car.carbox.getBody, wheelbox.getBody, wheelbox.getBody.getWorldCenter, new Vector2(1,0)) // euhhh g pas compri
     jointdef.enableLimit = true
     jointdef.lowerTranslation = 0
     jointdef.upperTranslation = 0
@@ -49,7 +48,7 @@ class Wheel(
    * @param angle
    */
   def setAngle(angle: Float): Unit = {
-    val velocity = body.getLinearVelocity
+    val velocity = wheelbox.getBody.getLinearVelocity
     val speed = math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
 
     // Paramètres de friction
@@ -67,34 +66,34 @@ class Wheel(
       math.min(effectiveMaxAngle, Math.toRadians(angle).toFloat)).toFloat
 
     wheelAngle = Math.toDegrees(clampedAngle).toFloat
-    body.setTransform(body.getPosition.x, body.getPosition.y, car.carbox.getBodyAngle + clampedAngle)
+    wheelbox.getBody.setTransform(wheelbox.getBody.getPosition.x, wheelbox.getBody.getPosition.y, car.carbox.getBodyAngle + clampedAngle)
   }
 
   def getAngle: Float = wheelAngle
 
   def getLocalVelocity: Vector2 = {
-    car.carbox.getBody.getLocalVector(car.carbox.getBody.getLinearVelocityFromLocalPoint(body.getPosition))
+    car.carbox.getBody.getLocalVector(car.carbox.getBody.getLinearVelocityFromLocalPoint(wheelbox.getBody.getPosition))
   }
 
   def getDirectionVector: Vector2 = {
     val directionVector = new Vector2(0, if (getLocalVelocity.y > 0) 1 else -1)
 
-    directionVector.rotate(Math.toDegrees(this.body.getAngle).toFloat)
+    directionVector.rotate(Math.toDegrees(wheelbox.getBody.getAngle).toFloat)
   }
 
   def getKillVelocityVector: Vector2 = {
     val sidewaysAxis: Vector2 = getDirectionVector
-    val dotprod: Float = body.getLinearVelocity.dot(sidewaysAxis)
+    val dotprod: Float = wheelbox.getBody.getLinearVelocity.dot(sidewaysAxis)
 
     new Vector2(sidewaysAxis.x * dotprod, sidewaysAxis.y * dotprod)
   }
 
   def killSidewaysVelocity(): Unit = {
-    body.setLinearVelocity(getKillVelocityVector)
+    wheelbox.getBody.setLinearVelocity(getKillVelocityVector)
   }
 
   def draw(g: GdxGraphics): Unit = {
-    val pos = wheel.getBodyPosition
+    val pos = wheelbox.getBodyPosition
     g.drawFilledRectangle(pos.x, pos.y, length / 2, width, Math.toDegrees(car.carbox.getBodyAngle).toFloat + 90f + getAngle, Color.BLACK)
   }
 }

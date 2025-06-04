@@ -13,13 +13,13 @@ import com.badlogic.gdx.math.Vector2
 object Slidewave extends App {
     val screenWidth = 1920
     val screenHeight = 1080
+    var playerCar: Car = null
     new SlidewaveWindow
 }
 
 class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
     var dbgRenderer: DebugRenderer = null
     val world = PhysicsWorld.getInstance()
-    var car: Car = null
 
     override def onInit(): Unit = {
         setTitle("Slidewave")
@@ -32,46 +32,52 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         new PhysicsScreenBoundaries(TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth,
             TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight)
 
-        // Our car
-        car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
+        Slidewave.playerCar = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 3, 30, 30)
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
         g.zoom(TileManager.zoom)
         g.moveCamera(
-            Math.round(car.carbox.getBodyPosition.x),
-            Math.round(car.carbox.getBodyPosition.y),
+            Math.round(Slidewave.playerCar.carbox.getBodyPosition.x),
+            Math.round(Slidewave.playerCar.carbox.getBodyPosition.y),
             TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth,
             TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight
         )
 
         TileManager.tiledMapRenderer.setView(g.getCamera)
         TileManager.tiledMapRenderer.render()
-        TileManager.drawCheckpoints(g)
+
+        // Test for checkpoints
+        for (i <- TileManager.checkpoints.indices) {
+            if (i != Slidewave.playerCar.passedCheckpoints - 1)
+                if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(i))) {
+                    Slidewave.playerCar.wentOverCheckpoint(i)
+                    println(s"went over checkpoint $i", s"new passed checkpoints : ${Slidewave.playerCar.passedCheckpoints}")
+                }
+        }
 
         // Physics update
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
 
         // Move the car according to key presses
-        car.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)
-        car.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)
+        Slidewave.playerCar.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)
+        Slidewave.playerCar.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)
 
         // Turn the car according to key presses
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
-            car.steer_left = true
-            car.steer_right = false
+            Slidewave.playerCar.steer_left = true
+            Slidewave.playerCar.steer_right = false
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
-            car.steer_right = true
-            car.steer_left = false
+            Slidewave.playerCar.steer_right = true
+            Slidewave.playerCar.steer_left = false
         } else {
-            car.steer_left = false
-            car.steer_right = false
+            Slidewave.playerCar.steer_left = false
+            Slidewave.playerCar.steer_right = false
         }
-        car.update(Gdx.graphics.getDeltaTime)
-        car.draw(g)
-        // dbgRenderer.render(world, g.getCamera.combined) // cause cam lag when on
+        Slidewave.playerCar.update(Gdx.graphics.getDeltaTime)
+        Slidewave.playerCar.draw(g)
 
-        TileManager.drawCurrentTile(g, car.wheels(0))
+        dbgRenderer.render(world, g.getCamera.combined) // causes cam lag when on
 
         // display FPS
         g.setColor(Color.BLACK)
