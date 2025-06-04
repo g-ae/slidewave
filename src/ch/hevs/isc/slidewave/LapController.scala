@@ -52,7 +52,7 @@ class LapController(val lapNumber: Int = 5) {
     if (i == passedCheckpoints) {
       // bon chemin !
       passedCheckpoints += 1
-    } else {
+    } else if (i > passedCheckpoints) {
       // AHHHHH checkpoint loupé / sens inverse
       currentLapCounted = false
       println("lap not counted")
