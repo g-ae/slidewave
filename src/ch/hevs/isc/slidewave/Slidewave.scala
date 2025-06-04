@@ -38,7 +38,12 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
         g.zoom(TileManager.zoom)
-        g.moveCamera(car.carbox.getBodyPosition.x, car.carbox.getBodyPosition.y, TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth, TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight)
+        g.moveCamera(
+            Math.round(car.carbox.getBodyPosition.x),
+            Math.round(car.carbox.getBodyPosition.y),
+            TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth,
+            TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight
+        )
 
         TileManager.tiledMapRenderer.setView(g.getCamera)
         TileManager.tiledMapRenderer.render()
@@ -64,7 +69,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         }
         car.update(Gdx.graphics.getDeltaTime)
         car.draw(g)
-        dbgRenderer.render(world, g.getCamera.combined)
+        // dbgRenderer.render(world, g.getCamera.combined) // cause cam lag when on
 
         TileManager.drawCurrentTile(g, car.wheels(0))
 
