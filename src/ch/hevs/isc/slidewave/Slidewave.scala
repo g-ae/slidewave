@@ -47,8 +47,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         new PhysicsScreenBoundaries(TileManager.tiledLayerBG.getWidth * TileManager.tiledLayerBG.getTileWidth,
             TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight)
-
-        Slidewave.playerCar
     }
     override def onGraphicRender(g: GdxGraphics): Unit = {
         g.clear()
