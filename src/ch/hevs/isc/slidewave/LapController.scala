@@ -25,11 +25,12 @@ class LapController(val lapNumber: Int = 5) {
     }
     lastTime = System.currentTimeMillis() - currentLapTimeStart
     println("Lap time : " + Utils.msToSecondsStr(lastTime) + " seconds")
-    if (lastTime == -1 || lastTime < bestTime) {
+    if (bestTime == -1 || lastTime < bestTime) {
       bestTime = lastTime
       println(s"New best ! : ${Utils.msToSecondsStr(bestTime)} seconds")
     }
     if (currentLap == lapNumber) {
+      currentLapTimeStart = -1
       println("Game ended")
       return
     }

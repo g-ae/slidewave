@@ -50,9 +50,9 @@ class Car(width: Float,
   // front right
   this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(1,-1), wheelWidth, wheelHeight, true, true))
   // back left
-  this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(-1,1), wheelWidth, wheelHeight, false, false))
+  this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(-1,1), wheelWidth, wheelHeight, false, true))
   // back right
-  this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(1,1), wheelWidth, wheelHeight, false, false))
+  this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(1,1), wheelWidth, wheelHeight, false, true))
 
   def getLocalVelocity: Vector2 = {
     carbox.getBody.getLocalVector(carbox.getBody.getLinearVelocityFromLocalPoint(new Vector2(0, 0)))
@@ -72,7 +72,9 @@ class Car(width: Float,
    */
   def update(deltaTime: Float): Unit = {
     // 1. Kill sideways velocity TODO: may change for future drifting
-    for (w <- wheels) if (!w.powered || TileManager.isWheelInTrack(w)) w.killSidewaysVelocity()
+    for (w <- wheels)
+      if (!w.powered || TileManager.isWheelInTrack(w)) w.killSidewaysVelocity()
+      else w.killSidewaysVelocity(0.93f)
 
     // Update car rectangle (for checkpoints)
     carPolygon.setPosition(carbox.getBodyPosition.x, carbox.getBodyPosition.y)

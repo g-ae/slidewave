@@ -88,8 +88,11 @@ class Wheel(
     new Vector2(sidewaysAxis.x * dotprod, sidewaysAxis.y * dotprod)
   }
 
-  def killSidewaysVelocity(): Unit = {
-    wheelbox.getBody.setLinearVelocity(getKillVelocityVector)
+  def killSidewaysVelocity(strength: Float = 0f): Unit = {
+    val lateralVelocity = wheelbox.getBody.getLinearVelocity.cpy().sub(getKillVelocityVector)
+    val reducedLateral = lateralVelocity.scl(strength) // 0 = pas de friction, 1 = friction totale
+    val newVelocity = getKillVelocityVector.add(reducedLateral)
+    wheelbox.getBody.setLinearVelocity(newVelocity)
   }
 
   def draw(g: GdxGraphics): Unit = {
