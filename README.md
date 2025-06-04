@@ -7,9 +7,9 @@ Le but de ce jeu serait de apprendre à simuler des vraies mécaniques dans un j
 
 **Objets à intégrer du plus au moins important:**
 
-- Voiture se déplaçant avec caméra qui suit
-- Circuit
-- Gestion des temps (+ checkpoints) / Sauvegarde meilleurs scores
+- Voiture se déplaçant avec caméra qui suit ✅
+- Circuit ⏳
+- Gestion des temps (+ checkpoints) / Sauvegarde meilleurs scores ✅
 - Minimap
 - Main menu
 - Course d'obstacles
