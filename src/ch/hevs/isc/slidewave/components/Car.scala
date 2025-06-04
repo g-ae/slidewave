@@ -4,7 +4,7 @@ import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
-import ch.hevs.isc.slidewave.TileManager
+import ch.hevs.isc.slidewave.{LapController, TileManager}
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.{Polygon, Rectangle, Vector2}
 
@@ -35,10 +35,7 @@ class Car(width: Float,
     width/2,  length/2,   // top-right
     -width/2,  length/2    // top-left
   ))
-  /**
-   * Last checkpoint that the car crossed, -1 = didn't go through start yet
-   */
-  var passedCheckpoints = 0
+  val lapController = new LapController()
 
   /**
    * How the car energy is dissipated when no longer accelerating.
@@ -140,20 +137,5 @@ class Car(width: Float,
     g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
   }
 
-  def wentOverCheckpoint(i: Int): Unit = {
-    if (i == 0 && passedCheckpoints == TileManager.checkpoints.length) {
-      // lap completed
-      passedCheckpoints = 1
-      println("lap completed")
-      // todo: lap timer
-      return
-    }
-    if (i == passedCheckpoints) {
-      // bon chemin !
-      passedCheckpoints += 1
-    } else {
-      // AHHHHH checkpoint loupé / sens inverse
-      println("lap not counted")
-    }
-  }
+  def wentOverCheckpoint(i: Int): Unit = lapController.carPassedCheckpoint(i)
 }

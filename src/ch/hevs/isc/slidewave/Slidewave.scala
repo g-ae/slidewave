@@ -49,10 +49,10 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         // Test for checkpoints
         for (i <- TileManager.checkpoints.indices) {
-            if (i != Slidewave.playerCar.passedCheckpoints - 1)
+            if (i != Slidewave.playerCar.lapController.passedCheckpoints - 1)
                 if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(i))) {
                     Slidewave.playerCar.wentOverCheckpoint(i)
-                    println(s"went over checkpoint $i", s"new passed checkpoints : ${Slidewave.playerCar.passedCheckpoints}")
+                    println(s"went over checkpoint $i", s"new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}")
                 }
         }
 
