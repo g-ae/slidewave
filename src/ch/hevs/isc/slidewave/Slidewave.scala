@@ -76,14 +76,14 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
 
         // Move the car according to key presses
-        Slidewave.playerCar.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)
-        Slidewave.playerCar.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)
+        Slidewave.playerCar.accelerate = Gdx.input.isKeyPressed(Input.Keys.DPAD_UP) || Gdx.input.isKeyPressed(Input.Keys.W)
+        Slidewave.playerCar.brake = Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)
 
         // Turn the car according to key presses
-        if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             Slidewave.playerCar.steer_left = true
             Slidewave.playerCar.steer_right = false
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             Slidewave.playerCar.steer_right = true
             Slidewave.playerCar.steer_left = false
         } else {
