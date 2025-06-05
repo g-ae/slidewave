@@ -74,10 +74,10 @@ class Car(width: Float,
     // 1. Kill sideways velocity TODO: may change for future drifting
     var wheelsOffTrack: Int = 0
     for (w <- wheels) {
-      val isWheelOnTrack = TileManager.isWheelInTrack(w)
-      if (!w.powered || isWheelOnTrack) w.killSidewaysVelocity()
-      else w.killSidewaysVelocity(0.93f)
-      if (!isWheelOnTrack) wheelsOffTrack += 1
+      if (!w.powered) w.killSidewaysVelocity()
+      else w.killSidewaysVelocity(TileManager.getTileUnderWheelGrip(w))
+
+      if (!TileManager.isWheelInTrack(w)) wheelsOffTrack += 1
     }
     if (wheelsOffTrack == wheels.length) lapController.currentLapCounted = false
 
@@ -130,7 +130,7 @@ class Car(width: Float,
           new Vector2(
             forceVector.x,
             forceVector.y
-          ).scl(if (onTrack) 1f else 0.2f)
+          ).scl(if (onTrack) 1f else 0.2f)  // force d'accélération dedans ou en dehors de la piste
         ),
         w.wheelbox.getBody.getWorldCenter, true)
     }

@@ -67,15 +67,35 @@ object TileManager {
     checkpoints.toArray
   }
   def isCarOverCheckpoint(cp: Polygon): Boolean = Intersector.overlapConvexPolygons(cp, Slidewave.playerCar.carPolygon)
+
   def getTileAt(x: Float, y: Float): TiledMapTileLayer.Cell = {
     tiledLayerBG.getCell(
       Math.floor(x / tiledLayerBG.getTileWidth).toInt,
       Math.floor(y / tiledLayerBG.getTileHeight).toInt
     )
   }
-  def isWheelInTrack(wheel: Wheel): Boolean = {
-    // todo: change this
-    val tile = getTileAt(wheel.wheelbox.getBodyPosition.x, wheel.wheelbox.getBodyPosition.y)
-    tile != null && tile.getTile.getId != 49 // grass
+  def getTileAt(wheel: Wheel): TiledMapTileLayer.Cell = getTileAt(wheel.wheelbox.getBodyPosition.x, wheel.wheelbox.getBodyPosition.y)
+
+  def isWheelInTrack(wheel: Wheel): Boolean = getTileAt(wheel) != null
+  def getTileUnderWheelType(w: Wheel): String = {
+    val t = getTileAt(w)
+    if (t == null) return null  // out of bounds
+
+    val prop = t.getTile.getProperties.get("ground")
+
+    if (prop != null) prop.asInstanceOf[String] // in track, probably on sand
+    else "track"  // track
+  }
+
+  /**
+   * Get `killSidewaysVelocity` strength
+   */
+  def getTileUnderWheelGrip(w: Wheel): Float = {
+    getTileUnderWheelType(w) match {
+      case null => 0.95f
+      case "sand" => 0.8f
+      case "track" => 0f
+      case _ => 0f
+    }
   }
 }
