@@ -96,7 +96,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         Slidewave.playerCar.update(Gdx.graphics.getDeltaTime)
         Slidewave.playerCar.draw(g)
 
-        dbgRenderer.render(world, g.getCamera.combined) // causes cam lag when on
+        //dbgRenderer.render(world, g.getCamera.combined) // causes cam lag when on
 
         // display FPS
         g.setColor(Color.BLACK)

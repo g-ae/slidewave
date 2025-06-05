@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.{Intersector, Polygon, Vector2}
 import scala.collection.mutable.ArrayBuffer
 
 object TileManager {
-  var tiledMap: TiledMap = new TmxMapLoader().load("data/tracks/track_test3.tmx")
+  var tiledMap: TiledMap = new TmxMapLoader().load("data/tracks/track1.tmx")
   var tiledLayerCheckPoint: MapLayer = tiledMap.getLayers.get("cp")
   var tiledLayerBG: TiledMapTileLayer = tiledMap.getLayers.get("track").asInstanceOf[TiledMapTileLayer]
   var tiledMapRenderer: OrthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
@@ -51,9 +51,6 @@ object TileManager {
       width, height,
       0, height
     ))
-    val rotation = cp.get("rotation")
-    println(rotation)
-    if (rotation != null) checkpointPolygon.setRotation(rotation.asInstanceOf[Float])
     checkpointPolygon.setPosition(cp.get("x").asInstanceOf[Float], cp.get("y").asInstanceOf[Float])
     checkpointPolygon
   }
@@ -63,8 +60,6 @@ object TileManager {
     while (true) {
       val obj = getCheckpoint(currentCheckpoint)
       if (obj == null) return checkpoints.toArray
-
-      println(s"got checkpoint $currentCheckpoint")
 
       checkpoints += obj
       currentCheckpoint += 1
