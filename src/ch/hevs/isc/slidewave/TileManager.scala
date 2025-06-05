@@ -1,8 +1,7 @@
 package ch.hevs.isc.slidewave
 
-import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.isc.slidewave.components.Wheel
-import com.badlogic.gdx.graphics.{Color, OrthographicCamera}
+import com.badlogic.gdx.graphics.{OrthographicCamera}
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapTileLayer, TmxMapLoader}
@@ -35,16 +34,6 @@ object TileManager {
     val prop = tiledLayerCheckPoint.getObjects.get("sp1").getProperties
     new Vector2(prop.get("x").asInstanceOf[Float], prop.get("y").asInstanceOf[Float])
   }
-
-  // Draw checkpoints for debug
-  def drawCheckpoint(g: GdxGraphics, checkpoint: Polygon): Unit = {
-    g.setColor(if (isCarOverCheckpoint(checkpoint)) Color.RED else Color.BLUE)
-  }
-  def drawCheckpoint(g: GdxGraphics, checkpoint: Int): Unit = {
-    val cPolygon = getCheckpoint(checkpoint)
-    if (cPolygon != null) drawCheckpoint(g, cPolygon)
-  }
-  def drawCheckpoints(g: GdxGraphics): Unit = for (r <- checkpoints) drawCheckpoint(g, r)
 
   // get checkpoint from number
   def getCheckpoint(i: Int): Polygon = {
