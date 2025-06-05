@@ -12,8 +12,8 @@ import scala.collection.mutable.ArrayBuffer
 
 object TileManager {
   var tiledMap: TiledMap = new TmxMapLoader().load("data/tracks/track_test.tmx")
-  var tiledLayerCheckPoint: MapLayer = tiledMap.getLayers.get("checkpoints")
-  var tiledLayerBG: TiledMapTileLayer = tiledMap.getLayers.get("bg").asInstanceOf[TiledMapTileLayer]
+  var tiledLayerCheckPoint: MapLayer = tiledMap.getLayers.get("cp")
+  var tiledLayerBG: TiledMapTileLayer = tiledMap.getLayers.get("track").asInstanceOf[TiledMapTileLayer]
   var tiledMapRenderer: OrthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
   val checkpoints = setupCheckpoints()  // ordered
   val zoom = 1f
