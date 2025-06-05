@@ -24,7 +24,6 @@ object Slidewave {
 }
 
 class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
-    lazy val dbgRenderer: DebugRenderer = new DebugRenderer
     val world = PhysicsWorld.getInstance()
 
     // fonts
@@ -72,7 +71,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         if (Slidewave.playerCar.lapController.passedCheckpoints != -1 && Slidewave.playerCar.lapController.passedCheckpoints != TileManager.checkpoints.length)
             if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(Slidewave.playerCar.lapController.passedCheckpoints))) {
                 Slidewave.playerCar.wentOverCheckpoint(Slidewave.playerCar.lapController.passedCheckpoints)
-                println(s"went over checkpoint ${Slidewave.playerCar.lapController.passedCheckpoints - 1}, new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}")
             }
 
         // Physics update
@@ -95,8 +93,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         }
         Slidewave.playerCar.update(Gdx.graphics.getDeltaTime)
         Slidewave.playerCar.draw(g)
-
-        //dbgRenderer.render(world, g.getCamera.combined) // causes cam lag when on
 
         // display FPS
         g.setColor(Color.BLACK)
