@@ -1,5 +1,6 @@
 package ch.hevs.isc.slidewave
 
+import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries
 import ch.hevs.gdx2d.desktop.PortableApplication
 import ch.hevs.gdx2d.desktop.physics.DebugRenderer
@@ -15,7 +16,7 @@ import com.badlogic.gdx.math.Vector2
 object Slidewave {
     val screenWidth = 1920
     val screenHeight = 1080
-    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 14)
+    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 14, new BitmapImage("data/images/car_black.png"))
 
     def main(args: Array[String]): Unit = {
         new SlidewaveWindow
@@ -32,8 +33,8 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
     lazy val lapTimeFont: BitmapFont = {
         val paramLapTime = new FreeTypeFontGenerator.FreeTypeFontParameter
-        paramLapTime.color = Color.WHITE
-        paramLapTime.size = generator.scaleForPixelHeight(72)
+        paramLapTime.color = Color.BLACK
+        paramLapTime.size = generator.scaleForPixelHeight(38)
         paramLapTime.hinting = FreeTypeFontGenerator.Hinting.Full
 
         generator.generateFont(paramLapTime)
@@ -102,7 +103,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
                 Utils.msToSecondsStr(System.currentTimeMillis() - Slidewave.playerCar.lapController.currentLapTimeStart),
                 lapTimeFont)
             g.drawString((g.getCamera.position.x - Slidewave.screenWidth / 2) + 5, (g.getCamera.position.y - Slidewave.screenHeight / 2) + lapTimeFont.getLineHeight,
-                s"Lap ${Slidewave.playerCar.lapController.currentLap} / ${Slidewave.playerCar.lapController.lapNumber}",
+                s"Lap ${Slidewave.playerCar.lapController.currentLap} / ${Slidewave.playerCar.lapController.lapNumber}" + (if (!Slidewave.playerCar.lapController.currentLapCounted) "(checkpoint missed, current lap not counted)" else ""),
                 lapTimeFont)
         } else if (Slidewave.playerCar.lapController.bestTime != -1) {
             g.drawString((g.getCamera.position.x - Slidewave.screenWidth / 2) + 5, (g.getCamera.position.y - Slidewave.screenHeight / 2) + lapTimeFont.getLineHeight,

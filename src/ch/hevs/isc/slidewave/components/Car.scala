@@ -16,7 +16,8 @@ class Car(width: Float,
           angle: Float,
           val power: Float,
           val maxSteerAngle: Float,
-          val maxSpeed: Float
+          val maxSpeed: Float,
+          val carImage: BitmapImage
          ) extends DrawableObject {
 
   var steer_left: Boolean = false
@@ -136,7 +137,7 @@ class Car(width: Float,
 
     // dessiner image voiture
     val pos = carbox.getBodyPosition
-    g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, new BitmapImage("data/images/car_black.png"))
+    g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, carImage)
   }
 
   def wentOverCheckpoint(i: Int): Unit = lapController.carPassedCheckpoint(i)
