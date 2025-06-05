@@ -2,7 +2,7 @@ package ch.hevs.isc.slidewave
 
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.isc.slidewave.components.Wheel
-import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.{Color, OrthographicCamera}
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapTileLayer, TmxMapLoader}
@@ -15,6 +15,15 @@ object TileManager {
   var tiledLayerCheckPoint: MapLayer = tiledMap.getLayers.get("cp")
   var tiledLayerBG: TiledMapTileLayer = tiledMap.getLayers.get("track").asInstanceOf[TiledMapTileLayer]
   var tiledMapRenderer: OrthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+
+  // mini map
+  var miniMapRenderer: OrthogonalTiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap)
+  val miniMapHeight = 200
+  val minMapWidth = 300
+  val miniCam = new OrthographicCamera(minMapWidth, miniMapHeight)
+  val carMiniTexture = new com.badlogic.gdx.graphics.Texture("data/images/bmw-logo.png")
+  val carMiniRegion  = new com.badlogic.gdx.graphics.g2d.TextureRegion(carMiniTexture)
+
   val checkpoints = setupCheckpoints()  // ordered
   val zoom = 1f
 

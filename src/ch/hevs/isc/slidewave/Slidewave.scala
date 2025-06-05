@@ -3,7 +3,6 @@ package ch.hevs.isc.slidewave
 import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.utils.PhysicsScreenBoundaries
 import ch.hevs.gdx2d.desktop.PortableApplication
-import ch.hevs.gdx2d.desktop.physics.DebugRenderer
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.physics.PhysicsWorld
 import ch.hevs.isc.slidewave.components.Car
@@ -58,6 +57,50 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         TileManager.tiledMapRenderer.setView(g.getCamera)
         TileManager.tiledMapRenderer.render()
+
+        // region minimap
+        TileManager.tiledLayerBG.setOpacity(0.5f)
+
+        // set viewport for mini-map
+        com.badlogic.gdx.Gdx.gl.glViewport(Slidewave.screenWidth - TileManager.minMapWidth, Slidewave.screenHeight - TileManager.miniMapHeight, TileManager.minMapWidth, TileManager.miniMapHeight)
+
+        // set mini-map cam position
+        TileManager.miniCam.viewportWidth  = TileManager.tiledLayerBG.getWidth  * TileManager.tiledLayerBG.getTileWidth
+        TileManager.miniCam.viewportHeight = TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight
+        TileManager.miniCam.position.set(
+            TileManager.miniCam.viewportWidth  / 2f,
+            TileManager.miniCam.viewportHeight / 2f,
+            0f
+        )
+        TileManager.miniCam.update()
+        TileManager.miniMapRenderer.setView(TileManager.miniCam)
+
+        // we get the batch and lauch it
+        val miniBatch = TileManager.miniMapRenderer.getBatch
+        miniBatch.begin()
+
+        // draw the track
+        miniBatch.setColor(Color.DARK_GRAY)
+        TileManager.miniMapRenderer.renderTileLayer(TileManager.tiledLayerBG)
+
+        // draw the bmw logo
+        miniBatch.setColor(Color.WHITE)
+        val carPos   = Slidewave.playerCar.carbox.getBodyPosition
+        val desiredPx = 20f // icone size
+        val worldPerPixel = TileManager.miniCam.viewportWidth / TileManager.minMapWidth   // échelle monde→pixel
+        val iconW = desiredPx * worldPerPixel
+        val iconH = desiredPx * worldPerPixel
+        miniBatch.draw(TileManager.carMiniRegion, carPos.x - iconW / 2f, carPos.y - iconH / 2f, iconW, iconH)
+
+        // 4) fin mini-map
+        miniBatch.end()
+
+        // set back viewport back to full screen
+        com.badlogic.gdx.Gdx.gl.glViewport(0, 0, Slidewave.screenWidth, Slidewave.screenHeight)
+
+        // set back opacity
+        TileManager.tiledLayerBG.setOpacity(1f)
+        // endregion
 
         // Test starting line checkpoint
         if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) {
