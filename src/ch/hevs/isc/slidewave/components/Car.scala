@@ -145,7 +145,7 @@ class Car(width: Float,
 
     // dessiner image voiture
     val pos = carbox.getBodyPosition
-    g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, width, length, carImage)
+    g.drawTransformedPicture(pos.x, pos.y, carbox.getBodyAngleDeg + 180, (width * 1.4).toFloat, length, carImage)
   }
 
   def wentOverCheckpoint(i: Int): Unit = lapController.carPassedCheckpoint(i)

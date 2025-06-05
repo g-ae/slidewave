@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2
 object Slidewave {
     val screenWidth = 1920
     val screenHeight = 1080
-    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/car_blue.png"))
+    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
 
     def main(args: Array[String]): Unit = {
         new SlidewaveWindow
