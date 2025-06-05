@@ -25,18 +25,16 @@ object Slidewave {
 
 class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
     val world = PhysicsWorld.getInstance()
+    var showControls: Boolean = true
 
     // fonts
-    val consolas = Gdx.files.internal("data/fonts/Consolas.ttf")
-    val generator = new FreeTypeFontGenerator(consolas)
-
     lazy val lapTimeFont: BitmapFont = {
         val paramLapTime = new FreeTypeFontGenerator.FreeTypeFontParameter
         paramLapTime.color = Color.BLACK
-        paramLapTime.size = generator.scaleForPixelHeight(38)
+        paramLapTime.size = MenuController.generator.scaleForPixelHeight(38)
         paramLapTime.hinting = FreeTypeFontGenerator.Hinting.Full
 
-        generator.generateFont(paramLapTime)
+        MenuController.generator.generateFont(paramLapTime)
     }
 
     override def onInit(): Unit = {
@@ -77,7 +75,9 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
 
         // Move the car according to key presses
-        Slidewave.playerCar.accelerate = Gdx.input.isKeyPressed(Input.Keys.W)
+        val pressingW = Gdx.input.isKeyPressed(Input.Keys.W)
+        Slidewave.playerCar.accelerate = pressingW
+        if (pressingW) showControls = false // hide menu showing controls
         Slidewave.playerCar.brake = Gdx.input.isKeyPressed(Input.Keys.S)
 
         // Turn the car according to key presses
@@ -110,5 +110,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
                 "Best time : " + Utils.msToSecondsStr(Slidewave.playerCar.lapController.bestTime) + " seconds",
                 lapTimeFont)
         }
+
+        if (showControls) MenuController.drawStartMenu(g)
     }
 }
