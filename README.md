@@ -10,8 +10,8 @@ Le but de ce jeu serait de apprendre à simuler des vraies mécaniques dans un j
 - Voiture se déplaçant avec caméra qui suit ✅
 - Circuit ✅
 - Gestion des temps (+ checkpoints) / Sauvegarde meilleurs scores ✅
-- Minimap ⏳
-- Main menu 
+- Minimap ✅
+- Main menu ✅
 - Course d'obstacles
 
 **Bonus:**
