@@ -122,6 +122,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         Slidewave.playerCar.accelerate = pressingW
         if (pressingW) showControls = false // hide menu showing controls
         Slidewave.playerCar.brake = Gdx.input.isKeyPressed(Input.Keys.S)
+        Slidewave.playerCar.handbrake = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
 
         // Turn the car according to key presses
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {

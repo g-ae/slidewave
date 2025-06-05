@@ -24,6 +24,7 @@ class Car(width: Float,
   var steer_right: Boolean = false
   var accelerate: Boolean = false
   var brake: Boolean = false
+  var handbrake: Boolean = false
   var wheelAngle: Float = 0
   val wheelWidth: Int = 16
   val wheelHeight: Int = 60
@@ -75,7 +76,10 @@ class Car(width: Float,
     var wheelsOffTrack: Int = 0
     for (w <- wheels) {
       if (!w.powered) w.killSidewaysVelocity()
-      else w.killSidewaysVelocity(TileManager.getTileUnderWheelGrip(w))
+      else {
+        if (!handbrake) w.killSidewaysVelocity(TileManager.getTileUnderWheelGrip(w))
+        else w.killSidewaysVelocity(TileManager.getTileTypeGrip(null))
+      }
 
       if (!TileManager.isWheelInTrack(w)) wheelsOffTrack += 1
     }

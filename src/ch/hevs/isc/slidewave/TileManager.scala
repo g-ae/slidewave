@@ -88,8 +88,9 @@ object TileManager {
   /**
    * Get `killSidewaysVelocity` strength
    */
-  def getTileUnderWheelGrip(w: Wheel): Float = {
-    getTileUnderWheelType(w) match {
+  def getTileUnderWheelGrip(w: Wheel): Float = getTileTypeGrip(getTileUnderWheelType(w))
+  def getTileTypeGrip(s: String): Float = {
+    s match {
       case null => 0.95f
       case "sand" => 0.8f
       case "track" => 0f
