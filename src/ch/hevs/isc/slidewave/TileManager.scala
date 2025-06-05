@@ -1,7 +1,7 @@
 package ch.hevs.isc.slidewave
 
 import ch.hevs.isc.slidewave.components.Wheel
-import com.badlogic.gdx.graphics.{OrthographicCamera}
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.MapLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.maps.tiled.{TiledMap, TiledMapTileLayer, TmxMapLoader}
