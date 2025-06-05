@@ -86,7 +86,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         // draw the bmw logo
         miniBatch.setColor(Color.WHITE)
         val carPos   = Slidewave.playerCar.carbox.getBodyPosition
-        val desiredPx = 20f // icone size
+        val desiredPx = 30f // icone size
         val worldPerPixel = TileManager.miniCam.viewportWidth / TileManager.minMapWidth   // échelle monde→pixel
         val iconW = desiredPx * worldPerPixel
         val iconH = desiredPx * worldPerPixel
