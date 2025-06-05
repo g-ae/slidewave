@@ -13,9 +13,7 @@ class LapController(val lapNumber: Int = 5) {
   var passedCheckpoints = -1
   def startLap(): Unit = {
     currentLap += 1
-    currentLapCounted = true
-    println(s"Starting lap $currentLap / $lapNumber")
-    currentLapTimeStart = System.currentTimeMillis()
+    restartTimer()
   }
   def endLap(): Unit = {
     if (!currentLapCounted) {
@@ -36,17 +34,17 @@ class LapController(val lapNumber: Int = 5) {
     }
     startLap()
   }
+  def restartTimer(): Unit = {
+    currentLapCounted = true
+    println(s"Starting lap $currentLap / $lapNumber")
+    currentLapTimeStart = System.currentTimeMillis()
+  }
   def carPassedCheckpoint(i: Int): Unit = {
-    if (i == 0 && passedCheckpoints == -1) {
+    if (i == 0) {
+      if (passedCheckpoints == -1) startLap()
+      else if (!currentLapCounted) restartTimer()
+      else if (passedCheckpoints == TileManager.checkpoints.length) endLap()
       passedCheckpoints = 1
-      startLap()
-      return
-    }
-    if (i == 0 && passedCheckpoints == TileManager.checkpoints.length) {
-      // lap completed
-      passedCheckpoints = 1
-      println("lap completed")
-      endLap()
       return
     }
     if (i == passedCheckpoints) {

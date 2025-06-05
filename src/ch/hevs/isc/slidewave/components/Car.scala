@@ -69,13 +69,17 @@ class Car(width: Float,
 
   /**
    * Updates physical parameters specific to the car
-   * @param deltaTime
    */
   def update(deltaTime: Float): Unit = {
     // 1. Kill sideways velocity TODO: may change for future drifting
-    for (w <- wheels)
-      if (!w.powered || TileManager.isWheelInTrack(w)) w.killSidewaysVelocity()
+    var wheelsOffTrack: Int = 0
+    for (w <- wheels) {
+      val isWheelOnTrack = TileManager.isWheelInTrack(w)
+      if (!w.powered || isWheelOnTrack) w.killSidewaysVelocity()
       else w.killSidewaysVelocity(0.93f)
+      if (!isWheelOnTrack) wheelsOffTrack += 1
+    }
+    if (wheelsOffTrack == wheels.length) lapController.currentLapCounted = false
 
     // Update car rectangle (for checkpoints)
     carPolygon.setPosition(carbox.getBodyPosition.x, carbox.getBodyPosition.y)

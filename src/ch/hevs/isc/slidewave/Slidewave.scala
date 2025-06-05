@@ -16,7 +16,7 @@ import com.badlogic.gdx.math.Vector2
 object Slidewave {
     val screenWidth = 1920
     val screenHeight = 1080
-    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 14, new BitmapImage("data/images/car_black.png"))
+    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/car_black.png"))
 
     def main(args: Array[String]): Unit = {
         new SlidewaveWindow
@@ -62,14 +62,18 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         TileManager.tiledMapRenderer.setView(g.getCamera)
         TileManager.tiledMapRenderer.render()
 
-        // Test for checkpoints
-        for (i <- TileManager.checkpoints.indices) {
-            if (i != Slidewave.playerCar.lapController.passedCheckpoints - 1)
-                if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(i))) {
-                    Slidewave.playerCar.wentOverCheckpoint(i)
-                    println(s"went over checkpoint $i", s"new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}")
-                }
+        // Test starting line checkpoint
+        if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) {
+            Slidewave.playerCar.wentOverCheckpoint(0)
+            println(s"went over checkpoint 0, new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}, ${Slidewave.playerCar.lapController.currentLap}")
         }
+
+        // Test nextCheckpoint only if game started
+        if (Slidewave.playerCar.lapController.passedCheckpoints != -1 && Slidewave.playerCar.lapController.passedCheckpoints != TileManager.checkpoints.length)
+            if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(Slidewave.playerCar.lapController.passedCheckpoints))) {
+                Slidewave.playerCar.wentOverCheckpoint(Slidewave.playerCar.lapController.passedCheckpoints)
+                println(s"went over checkpoint ${Slidewave.playerCar.lapController.passedCheckpoints - 1}, new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}")
+            }
 
         // Physics update
         PhysicsWorld.updatePhysics(Gdx.graphics.getDeltaTime)
@@ -103,7 +107,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
                 Utils.msToSecondsStr(System.currentTimeMillis() - Slidewave.playerCar.lapController.currentLapTimeStart),
                 lapTimeFont)
             g.drawString((g.getCamera.position.x - Slidewave.screenWidth / 2) + 5, (g.getCamera.position.y - Slidewave.screenHeight / 2) + lapTimeFont.getLineHeight,
-                s"Lap ${Slidewave.playerCar.lapController.currentLap} / ${Slidewave.playerCar.lapController.lapNumber}" + (if (!Slidewave.playerCar.lapController.currentLapCounted) "(checkpoint missed, current lap not counted)" else ""),
+                s"Lap ${Slidewave.playerCar.lapController.currentLap} / ${Slidewave.playerCar.lapController.lapNumber}" + (if (!Slidewave.playerCar.lapController.currentLapCounted) " (you went out of bounds, current lap not counted)" else ""),
                 lapTimeFont)
         } else if (Slidewave.playerCar.lapController.bestTime != -1) {
             g.drawString((g.getCamera.position.x - Slidewave.screenWidth / 2) + 5, (g.getCamera.position.y - Slidewave.screenHeight / 2) + lapTimeFont.getLineHeight,
