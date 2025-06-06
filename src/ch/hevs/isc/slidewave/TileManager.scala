@@ -34,6 +34,7 @@ object TileManager {
     val prop = tiledLayerCheckPoint.getObjects.get("sp1").getProperties
     new Vector2(prop.get("x").asInstanceOf[Float], prop.get("y").asInstanceOf[Float])
   }
+  def getStartingPointMeters: Vector2 = getStartingPoint.cpy().scl(0.013333f) // Chiffre trouvé en trial-and-error
 
   // get checkpoint from number
   def getCheckpoint(i: Int): Polygon = {

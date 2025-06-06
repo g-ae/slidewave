@@ -4,7 +4,7 @@ import ch.hevs.gdx2d.components.bitmaps.BitmapImage
 import ch.hevs.gdx2d.components.physics.primitives.PhysicsBox
 import ch.hevs.gdx2d.lib.GdxGraphics
 import ch.hevs.gdx2d.lib.interfaces.DrawableObject
-import ch.hevs.isc.slidewave.{LapController, TileManager}
+import ch.hevs.isc.slidewave.{LapController, Slidewave, TileManager}
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.{Polygon, Rectangle, Vector2}
 
@@ -59,6 +59,12 @@ class Car(width: Float,
   def lapController: LapController = pLapController
 
   def setupLapController(): Unit = pLapController = new LapController()
+
+  def resetCarPos(): Unit = {
+    carbox.setBodyLinearVelocity(Vector2.Zero)
+    carbox.getBody.setAngularVelocity(0f)
+    carbox.getBody.setTransform(TileManager.getStartingPointMeters, Math.toRadians(90).toFloat)
+  }
 
   def getLocalVelocity: Vector2 = {
     carbox.getBody.getLocalVector(carbox.getBody.getLinearVelocityFromLocalPoint(new Vector2(0, 0)))

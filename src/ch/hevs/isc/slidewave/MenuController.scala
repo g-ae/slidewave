@@ -56,5 +56,8 @@ object MenuController {
     g.setColor(Color.WHITE)
     g.drawString(camX - 100, camY + 50, s"Best lap: ${Utils.msToSecondsStr(Slidewave.playerCar.lapController.bestTime)}", font)
     g.drawString(camX - 100, camY - 20, s"Total time: ${Utils.msToSecondsStr(Slidewave.playerCar.lapController.totalTime)}", font)
+
+    // Restart instruction
+    g.drawString(camX - 150, camY - 120, "Press [R] to restart", font)
   }
 }

@@ -16,6 +16,7 @@ object Slidewave {
     val screenWidth = 1920
     val screenHeight = 1080
     var displayEndGame: Boolean = false
+    var stopPhysics = false
     lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
 
     def main(args: Array[String]): Unit = {
@@ -105,6 +106,22 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
         Slidewave.playerCar.draw(g)
 
+        // draw menus
+        if (showControls) MenuController.drawStartMenu(g)
+        if (Slidewave.displayEndGame) {
+            MenuController.drawEndMenu(g)
+            if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+                // restart game
+                Slidewave.displayEndGame = false
+                Slidewave.stopPhysics = true
+                Slidewave.playerCar.setupLapController()
+                Slidewave.playerCar.resetCarPos()
+                Slidewave.stopPhysics = false
+            }
+        }
+
+        if (Slidewave.stopPhysics) return
+
         // Test starting line checkpoint
         if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) Slidewave.playerCar.wentOverCheckpoint(0)
 
@@ -152,11 +169,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             g.drawString((g.getCamera.position.x - Slidewave.screenWidth / 2) + 5, (g.getCamera.position.y - Slidewave.screenHeight / 2) + lapTimeFont.getLineHeight,
                 "Best time : " + Utils.msToSecondsStr(Slidewave.playerCar.lapController.bestTime) + " seconds",
                 lapTimeFont)
-        }
-
-        if (showControls) MenuController.drawStartMenu(g)
-        if (Slidewave.displayEndGame) {
-            MenuController.drawEndMenu(g)
         }
     }
 }
