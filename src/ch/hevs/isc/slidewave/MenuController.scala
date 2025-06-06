@@ -38,4 +38,23 @@ object MenuController {
     g.drawString(g.getCamera.position.x + 380, g.getCamera.position.y - 220, "Handbrake", font)
     g.drawString(g.getCamera.position.x + 380, g.getCamera.position.y - 220, "Handbrake", font)
   }
+  def drawEndMenu(g: GdxGraphics): Unit = {
+    val camX = g.getCamera.position.x
+    val camY = g.getCamera.position.y
+
+    // Background rectangles
+    g.setColor(Color.BLACK)
+    g.drawFilledRectangle(camX, camY, Slidewave.screenWidth * 2 / 3 + 54, Slidewave.screenHeight * 2 / 3 + 54, 0)
+    g.setColor(Color.GRAY)
+    g.drawFilledRectangle(camX, camY, Slidewave.screenWidth * 2 / 3 + 40, Slidewave.screenHeight * 2 / 3 + 40, 0)
+
+    // Game logo or "Game Over"
+    g.drawTransformedPicture(camX, camY + 250, 0, 200, 200, gameLogo)
+    // Or if no logo: g.drawString(camX - 100, camY + 250, "GAME OVER", font)
+
+    // Time info
+    g.setColor(Color.WHITE)
+    g.drawString(camX - 100, camY + 50, s"Best lap: ${Utils.msToSecondsStr(Slidewave.playerCar.lapController.bestTime)}", font)
+    g.drawString(camX - 100, camY - 20, s"Total time: ${Utils.msToSecondsStr(Slidewave.playerCar.lapController.totalTime)}", font)
+  }
 }

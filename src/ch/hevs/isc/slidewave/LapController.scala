@@ -6,6 +6,7 @@ class LapController(val lapNumber: Int = 5) {
   var lastTime: Double = -1
   var bestTime: Double = -1
   var currentLapTimeStart: Double = -1
+  var totalTime: Double = 0
   var currentLapCounted: Boolean = false
   /**
    * Last checkpoint that the car crossed, -1 = didn't go through start yet
@@ -23,13 +24,14 @@ class LapController(val lapNumber: Int = 5) {
     }
     lastTime = System.currentTimeMillis() - currentLapTimeStart
     println("Lap time : " + Utils.msToSecondsStr(lastTime) + " seconds")
+    totalTime += lastTime
     if (bestTime == -1 || lastTime < bestTime) {
       bestTime = lastTime
       println(s"New best ! : ${Utils.msToSecondsStr(bestTime)} seconds")
     }
     if (currentLap == lapNumber) {
       currentLapTimeStart = -1
-      println("Game ended")
+      Slidewave.displayEndGame = true
       return
     }
     startLap()

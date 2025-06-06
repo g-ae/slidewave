@@ -28,7 +28,7 @@ class Car(width: Float,
   var wheelAngle: Float = 0
   val wheelWidth: Int = 16
   val wheelHeight: Int = 60
-  val carbox: PhysicsBox = new PhysicsBox("carCenter", position, width, length, angle)
+  val carbox: PhysicsBox = new PhysicsBox("carCenter", position.cpy(), width, length, angle)
   carbox.setCollisionGroup(-1)
   val wheels = new ArrayBuffer[Wheel]()
   val carPolygon = new Polygon(Array(
@@ -37,7 +37,7 @@ class Car(width: Float,
     width/2,  length/2,   // top-right
     -width/2,  length/2    // top-left
   ))
-  val lapController = new LapController()
+  private var pLapController = new LapController()
 
   /**
    * How the car energy is dissipated when no longer accelerating.
@@ -56,6 +56,10 @@ class Car(width: Float,
   // back right
   this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(1,1), wheelWidth, wheelHeight, false, true))
 
+  def lapController: LapController = pLapController
+
+  def setupLapController(): Unit = pLapController = new LapController()
+
   def getLocalVelocity: Vector2 = {
     carbox.getBody.getLocalVector(carbox.getBody.getLinearVelocityFromLocalPoint(new Vector2(0, 0)))
   }
@@ -72,7 +76,7 @@ class Car(width: Float,
    * Updates physical parameters specific to the car
    */
   def update(deltaTime: Float): Unit = {
-    // 1. Kill sideways velocity TODO: may change for future drifting
+    // 1. Kill sideways velocity
     var wheelsOffTrack: Int = 0
     for (w <- wheels) {
       if (!w.powered) w.killSidewaysVelocity()
