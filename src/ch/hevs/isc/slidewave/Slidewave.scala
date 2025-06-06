@@ -17,11 +17,13 @@ object Slidewave {
     val screenHeight = 1080
     var displayEndGame: Boolean = false
     var stopPhysics = false
-    lazy val playerCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
+    var playerCar: Car = null
 
     def main(args: Array[String]): Unit = {
         new SlidewaveWindow
     }
+
+    def getNewCar: Car = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
 }
 
 class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewave.screenHeight) {
@@ -40,6 +42,8 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
     override def onInit(): Unit = {
         setTitle("Slidewave")
+
+        Slidewave.playerCar = Slidewave.getNewCar
 
         // No gravity in this world
         world.setGravity(new Vector2(0, 0))
@@ -113,10 +117,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             if (Gdx.input.isKeyPressed(Input.Keys.R)) {
                 // restart game
                 Slidewave.displayEndGame = false
-                Slidewave.stopPhysics = true
-                Slidewave.playerCar.setupLapController()
-                Slidewave.playerCar.resetCarPos()
-                Slidewave.stopPhysics = false
+                Slidewave.playerCar = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
             }
         }
 

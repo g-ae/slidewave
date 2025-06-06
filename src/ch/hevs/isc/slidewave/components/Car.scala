@@ -37,7 +37,7 @@ class Car(width: Float,
     width/2,  length/2,   // top-right
     -width/2,  length/2    // top-left
   ))
-  private var pLapController = new LapController()
+  val lapController = new LapController()
 
   /**
    * How the car energy is dissipated when no longer accelerating.
@@ -55,16 +55,6 @@ class Car(width: Float,
   this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(-1,1), wheelWidth, wheelHeight, false, true))
   // back right
   this.wheels.append(new Wheel(this, wheelOffset.cpy().scl(1,1), wheelWidth, wheelHeight, false, true))
-
-  def lapController: LapController = pLapController
-
-  def setupLapController(): Unit = pLapController = new LapController()
-
-  def resetCarPos(): Unit = {
-    carbox.setBodyLinearVelocity(Vector2.Zero)
-    carbox.getBody.setAngularVelocity(0f)
-    carbox.getBody.setTransform(TileManager.getStartingPointMeters, Math.toRadians(90).toFloat)
-  }
 
   def getLocalVelocity: Vector2 = {
     carbox.getBody.getLocalVector(carbox.getBody.getLinearVelocityFromLocalPoint(new Vector2(0, 0)))
