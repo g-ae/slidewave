@@ -77,7 +77,8 @@ class Car(width: Float,
     for (w <- wheels) {
       if (!w.powered) w.killSidewaysVelocity()
       else {
-        if (!handbrake) w.killSidewaysVelocity(TileManager.getTileUnderWheelGrip(w))
+        if (getLocalVelocity.len() < 1.5f) w.killSidewaysVelocity(0.3f) // if speed lower than 1.5f, cars gets grip anyway
+        else if (!handbrake) w.killSidewaysVelocity(TileManager.getTileUnderWheelGrip(w))
         else w.killSidewaysVelocity(TileManager.getTileTypeGrip(null))
       }
 

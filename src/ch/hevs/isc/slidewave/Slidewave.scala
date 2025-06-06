@@ -117,7 +117,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             if (Gdx.input.isKeyPressed(Input.Keys.R)) {
                 // restart game
                 Slidewave.displayEndGame = false
-                Slidewave.playerCar = new Car(30, 70, TileManager.getStartingPoint, (Math.PI/2).toFloat, 2, 30, 20, new BitmapImage("data/images/bmw-car.png"))
+                Slidewave.playerCar = Slidewave.getNewCar
             }
         }
 
