@@ -103,11 +103,10 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
         TileManager.tiledLayerBG.setOpacity(1f)
         // endregion
 
+        Slidewave.playerCar.draw(g)
+
         // Test starting line checkpoint
-        if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) {
-            Slidewave.playerCar.wentOverCheckpoint(0)
-            println(s"went over checkpoint 0, new passed checkpoints : ${Slidewave.playerCar.lapController.passedCheckpoints}, ${Slidewave.playerCar.lapController.currentLap}")
-        }
+        if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) Slidewave.playerCar.wentOverCheckpoint(0)
 
         // Test nextCheckpoint only if game started
         if (Slidewave.playerCar.lapController.passedCheckpoints != -1 && Slidewave.playerCar.lapController.passedCheckpoints != TileManager.checkpoints.length)
@@ -137,7 +136,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
             Slidewave.playerCar.steer_right = false
         }
         Slidewave.playerCar.update(Gdx.graphics.getDeltaTime)
-        Slidewave.playerCar.draw(g)
 
         // display FPS
         g.setColor(Color.BLACK)
