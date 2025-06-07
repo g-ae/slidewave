@@ -10,93 +10,162 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.physics.box2d.joints.{PrismaticJointDef, RevoluteJointDef}
 
+/**
+ * Wheel
+ *
+ * Physical **and** visual representation of a single tyre that belongs to a
+ * parent [[Car]].  Each wheel can be:
+ *
+ *   • '''revolving''' – allowed to steer via a revolute joint (front axle)
+ *   • '''powered'''  – receives engine force directly
+ *
+ * Every wheel is a slim Box2D rectangle rigidly attached to the chassis
+ * through either
+ *   – a [[RevoluteJointDef]] → front wheels (free to rotate for steering) or
+ *   – a [[PrismaticJointDef]] → rear wheels (no steering, slide constrained)
+ *
+ * All coordinates are **physics metres** unless suffixed with *px*.
+ *
+ * @param car       Parent [[Car]].
+ * @param wheelPos  Offset from the car centre (*pixels*).
+ * @param width     Visual tyre width  (*pixels*).
+ * @param length    Visual tyre length (*pixels*).
+ * @param revolving `true` → this wheel may steer (front axle).
+ * @param powered   `true` → engine force is applied to this wheel.
+ */
 class Wheel(
-           val car: Car,
-           wheelPos: Vector2,
-           width: Float,
-           length: Float,
-           val revolving: Boolean, // est-ce que la roue tourne en gros
-           val powered: Boolean // ajouter sur les roues où l'on met le POWER
+             val car: Car,
+             wheelPos: Vector2,
+             width: Float,
+             length: Float,
+             val revolving: Boolean,
+             val powered: Boolean
            ) extends DrawableObject {
-  val world: World = PhysicsWorld.getInstance()
-  val x: Vector2 = PhysicsConstants.coordPixelsToMeters(wheelPos)
-  var wheelAngle: Float = 0f
 
-  // convert car position to pixels
-  val carPos: Vector2 = car.carbox.getBody.getWorldPoint(x)
+  // ---------------------------------------------------------------------------
+  // Box2D initialisation
+  // ---------------------------------------------------------------------------
+  private val world: World = PhysicsWorld.getInstance() // Shared Box2D world (singleton handled by gdx2d)
+  private val localPosM: Vector2 = PhysicsConstants.coordPixelsToMeters(wheelPos) // Wheel centre in **metres** relative to the chassis origin.
+  private var wheelAngle: Float = 0f  // Current steering angle (°). Positive → steer left
 
-  // créer une physique pour la roue
-  val wheelbox: PhysicsBox = new PhysicsBox("wheel", PhysicsConstants.coordMetersToPixels(carPos), width, length /2, car.carbox.getBodyAngle)
+  // Build the Box2D body
+  private val carPosPx: Vector2 =
+    car.carbox.getBody.getWorldPoint(localPosM) // world→px
 
-  if (revolving) { // create ar evoluting joint to connect wheel to body
-    // la roue pourra changer de sens (roues avant sur voiture lambda)
-    val jointdef: RevoluteJointDef = new RevoluteJointDef
-    jointdef.initialize(car.carbox.getBody, wheelbox.getBody, wheelbox.getBody.getWorldCenter)
-    jointdef.enableMotor = false
-    world.createJoint(jointdef)
+  // Half-length rectangle to prevent self-collision when turning
+  val wheelbox: PhysicsBox = new PhysicsBox(
+    "wheel",
+    PhysicsConstants.coordMetersToPixels(carPosPx),
+    width,
+    length / 2,
+    car.carbox.getBodyAngle
+  )
+
+  // Joint selection: revolute (front) vs prismatic (rear)
+  if (revolving) {
+    val jd = new RevoluteJointDef
+    jd.initialize(
+      car.carbox.getBody,
+      wheelbox.getBody,
+      wheelbox.getBody.getWorldCenter
+    )
+    jd.enableMotor = false            // no steering motor, purely passive
+    world.createJoint(jd)
   } else {
-    val jointdef: PrismaticJointDef = new PrismaticJointDef
-    jointdef.initialize(car.carbox.getBody, wheelbox.getBody, wheelbox.getBody.getWorldCenter, new Vector2(1,0)) // euhhh g pas compri
-    jointdef.enableLimit = true
-    jointdef.lowerTranslation = 0
-    jointdef.upperTranslation = 0
-    world.createJoint(jointdef)
+    val jd = new PrismaticJointDef
+    jd.initialize(
+      car.carbox.getBody,
+      wheelbox.getBody,
+      wheelbox.getBody.getWorldCenter,
+      new Vector2(1, 0)               // slide axis irrelevant (locked below)
+    )
+    jd.enableLimit       = true
+    jd.lowerTranslation  = 0
+    jd.upperTranslation  = 0          // lock translation → behaves like bolt
+    world.createJoint(jd)
   }
 
-  /**
-   * Change wheel angle -> relative to current car angle
-   * @param angle
-   */
-  def setAngle(angle: Float): Unit = {
-    val velocity = wheelbox.getBody.getLinearVelocity
-    val speed = math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
+  // ---------------------------------------------------------------------------
+  // Steering control
+  // ---------------------------------------------------------------------------
 
-    // Paramètres de friction
-    val maxAngle = Math.toRadians(30).toFloat  // angle max à vitesse nulle
-    val speedThreshold = 10f                   // vitesse où la friction commence
-    val frictionFactor = 0.8f                  // intensité de la friction (0-1)
+  // Updates the wheel heading relative to the chassis.
+  def setAngle(angleDeg: Float): Unit = {
 
-    // Calcul de la réduction d'angle basée sur la vitesse
-    val speedRatio = math.min(speed / speedThreshold, 1f)
-    val angleReduction = speedRatio * frictionFactor
-    val effectiveMaxAngle = maxAngle * (1f - angleReduction)
+    // --- Speed-based under-steer model ---------------------------------------
+    val v          = wheelbox.getBody.getLinearVelocity
+    val speedMS    = math.hypot(v.x, v.y).toFloat          // m/s
+    val fullLock   = Math.toRadians(30).toFloat            // 30° at 0 km/h
+    val fadeStart  = 10f                                   // m/s ≈ 36 km/h
+    val fadeFactor = 0.8f                                  // 0=no fade, 1=full
 
-    // Limiter l'angle cible
-    val clampedAngle = math.max(-effectiveMaxAngle,
-      math.min(effectiveMaxAngle, Math.toRadians(angle).toFloat)).toFloat
+    val fade      = math.min(speedMS / fadeStart, 1f) * fadeFactor
+    val allowed   = fullLock * (1f - fade)                 // shrink with speed
+    val demanded  = Math.toRadians(angleDeg).toFloat
+    val clamped   = demanded.max(-allowed).min(allowed)
 
-    wheelAngle = Math.toDegrees(clampedAngle).toFloat
-    wheelbox.getBody.setTransform(wheelbox.getBody.getPosition.x, wheelbox.getBody.getPosition.y, car.carbox.getBodyAngle + clampedAngle)
+    wheelAngle = Math.toDegrees(clamped).toFloat
+    wheelbox.getBody.setTransform(
+      wheelbox.getBody.getPosition.x,
+      wheelbox.getBody.getPosition.y,
+      car.carbox.getBodyAngle + clamped
+    )
   }
 
+  // Current steering angle in degrees (read-only)
   def getAngle: Float = wheelAngle
 
-  def getLocalVelocity: Vector2 = {
-    car.carbox.getBody.getLocalVector(car.carbox.getBody.getLinearVelocityFromLocalPoint(wheelbox.getBody.getPosition))
+  // ---------------------------------------------------------------------------
+  // Helper vectors
+  // ---------------------------------------------------------------------------
+
+  // Velocity in the car *local* frame (m/s)
+  private def localVelocity: Vector2 =
+    car.carbox.getBody.getLocalVector(
+      car.carbox.getBody.getLinearVelocityFromLocalPoint(
+        wheelbox.getBody.getPosition
+      )
+    )
+
+  // Unit vector pointing in the tyre’s facing direction
+  private def directionVector: Vector2 = {
+    val dir = new Vector2(0, if (localVelocity.y > 0) 1 else -1)
+    dir.rotate(Math.toDegrees(wheelbox.getBody.getAngle).toFloat)
   }
 
-  def getDirectionVector: Vector2 = {
-    val directionVector = new Vector2(0, if (getLocalVelocity.y > 0) 1 else -1)
-
-    directionVector.rotate(Math.toDegrees(wheelbox.getBody.getAngle).toFloat)
+  // Projection of velocity onto the sideways axis (needs killing for grip)
+  private def killVelocity: Vector2 = {
+    val side = directionVector
+    val dot  = wheelbox.getBody.getLinearVelocity.dot(side)
+    new Vector2(side.x * dot, side.y * dot)
   }
 
-  def getKillVelocityVector: Vector2 = {
-    val sidewaysAxis: Vector2 = getDirectionVector
-    val dotprod: Float = wheelbox.getBody.getLinearVelocity.dot(sidewaysAxis)
-
-    new Vector2(sidewaysAxis.x * dotprod, sidewaysAxis.y * dotprod)
-  }
-
+  /** Removes a share of lateral speed to simulate tyre grip.
+   *
+   * @param strength 0 → ice (no grip), 1 → full grip.
+   */
   def killSidewaysVelocity(strength: Float = 0f): Unit = {
-    val lateralVelocity = wheelbox.getBody.getLinearVelocity.cpy().sub(getKillVelocityVector)
-    val reducedLateral = lateralVelocity.scl(strength) // 0 = pas de friction, 1 = friction totale
-    val newVelocity = getKillVelocityVector.add(reducedLateral)
-    wheelbox.getBody.setLinearVelocity(newVelocity)
+    val lateral    = wheelbox.getBody.getLinearVelocity.cpy().sub(killVelocity)
+    val damped     = lateral.scl(strength)                // interpolate
+    val corrected  = killVelocity.add(damped)
+    wheelbox.getBody.setLinearVelocity(corrected)
   }
 
-  def draw(g: GdxGraphics): Unit = {
+  // ---------------------------------------------------------------------------
+  // Rendering
+  // ---------------------------------------------------------------------------
+
+  // Draws a simple filled rectangle representing the tyre
+  override def draw(g: GdxGraphics): Unit = {
     val pos = wheelbox.getBodyPosition
-    g.drawFilledRectangle(pos.x, pos.y, length / 2, width, Math.toDegrees(car.carbox.getBodyAngle).toFloat + 90f + getAngle, Color.BLACK)
+    g.drawFilledRectangle(
+      pos.x,
+      pos.y,
+      length / 2,
+      width,
+      Math.toDegrees(car.carbox.getBodyAngle).toFloat + 90f + wheelAngle,
+      Color.BLACK
+    )
   }
 }
