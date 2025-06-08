@@ -42,9 +42,8 @@ class LapController(val lapNumber: Int = 5) {
   var passedCheckpoints = -1
 
   // -------------------------------------------------------------------------
-  // Public API – called by game logic
+  // Functions called by game logic
   // -------------------------------------------------------------------------
-
   /** Begins a new lap and (re)initialises timing counters. */
   def startLap(): Unit = {
     currentLap += 1
@@ -57,33 +56,31 @@ class LapController(val lapNumber: Int = 5) {
    * ignored and a fresh lap is started instead.
    */
   def endLap(): Unit = {
-    // Abort if the player violated the checkpoint order ----------------------
+    // Abort if the player violated the checkpoint order
     if (!currentLapCounted) {
       println("You failed to take the right checkpoint. Lap has not been counted.")
       startLap()
       return
     }
 
-    // Compute raw lap duration ----------------------------------------------
+    // Compute raw lap duration
     lastTime = System.currentTimeMillis() - currentLapTimeStart
     println("Lap time : " + Utils.msToSecondsStr(lastTime) + " seconds")
     totalTime += lastTime
 
-    // Personal best ----------------------------------------------------------
+    // Personal best
     if (bestTime == -1 || lastTime < bestTime) {
       bestTime = lastTime
       println(s"New best ! : ${Utils.msToSecondsStr(bestTime)} seconds")
     }
 
-    // End‑of‑race detection --------------------------------------------------
+    // End‑of‑race detection
     if (currentLap == lapNumber) {
       currentLapTimeStart = -1   // stop the live timer
       Slidewave.displayEndGame = true
       return
     }
-
-    // Otherwise chain into the next lap --------------------------------------
-    startLap()
+    startLap()  // Otherwise chain into the next lap
   }
 
   /** Resets the live timer and re‑enables lap counting. */
@@ -101,30 +98,20 @@ class LapController(val lapNumber: Int = 5) {
    *          start/finish line).
    */
   def carPassedCheckpoint(i: Int): Unit = {
-    // -----------------------------------------------------------------------
     // Start / finish line (checkpoint 0)
-    // -----------------------------------------------------------------------
     if (i == 0) {
-      if (passedCheckpoints == -1)                // First time → begin race
-        startLap()
-      else if (!currentLapCounted)                // Lap invalidated → restart timer
-        restartTimer()
-      else if (passedCheckpoints == TileManager.checkpoints.length) // All checkpoints taken → lap completed
-        endLap()
-
-      passedCheckpoints = 1                      // Expect checkpoint #1 next
+      if (passedCheckpoints == -1) startLap() // First time → begin race
+      else if (!currentLapCounted) restartTimer() // Lap invalidated → restart timer
+      else if (passedCheckpoints == TileManager.checkpoints.length) endLap() // All checkpoints taken → lap completed
+      passedCheckpoints = 1 // Expect checkpoint #1 next
       return
     }
 
-    // -----------------------------------------------------------------------
-    // Intermediate checkpoints (1 .. n)
-    // -----------------------------------------------------------------------
+    // Intermediate checkpoints
     if (i == passedCheckpoints) {
-      // ✔ Correct order – move on to the next checkpoint
-      passedCheckpoints += 1
+      passedCheckpoints += 1  // Correct order – move on to the next checkpoint
     } else if (i > passedCheckpoints) {
-      // ✖ Checkpoint skipped or wrong direction → invalidate lap
-      currentLapCounted = false
+      currentLapCounted = false // Checkpoint skipped or wrong direction → invalidate lap
       println("lap not counted")
     }
   }

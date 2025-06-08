@@ -121,7 +121,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
       TileManager.tiledLayerBG.getHeight * TileManager.tiledLayerBG.getTileHeight
     )
 
-    // Draw the tiled map ------------------------------------------------------
+    // Draw the tiled map
     TileManager.tiledMapRenderer.setView(g.getCamera)
     TileManager.tiledMapRenderer.render()
 
@@ -157,7 +157,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
     miniBatch.setColor(Color.DARK_GRAY)
     TileManager.miniMapRenderer.renderTileLayer(TileManager.tiledLayerBG)
 
-    // Draw the player icon ----------------------------------------------------
+    // Draw the player icon
     miniBatch.setColor(Color.WHITE)
     val carPos      = Slidewave.playerCar.carbox.getBodyPosition
     val desiredPx   = 30f                     // icon size in screen pixels
@@ -172,7 +172,7 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
 
     miniBatch.end()
 
-    // Restore full‑screen viewport -------------------------------------------
+    // Restore full‑screen viewport
     com.badlogic.gdx.Gdx.gl.glViewport(0, 0, Slidewave.screenWidth, Slidewave.screenHeight)
     TileManager.tiledLayerBG.setOpacity(1f)
 
@@ -192,20 +192,23 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
       }
     }
 
-    // Early‑exit if physics are paused ----------------------------------------
+    // Early‑exit if physics are paused
     if (Slidewave.stopPhysics) return
 
     // -----------------------------------------------------------------------
     // 4) Checkpoint detection
     // -----------------------------------------------------------------------
     // Starting line
-    if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))) Slidewave.playerCar.wentOverCheckpoint(0)
+    if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(0))){
+      Slidewave.playerCar.wentOverCheckpoint(0)
+    }
 
     // Sequential checkpoints (only after race start)
-    if (Slidewave.playerCar.lapController.passedCheckpoints != -1 &&
-      Slidewave.playerCar.lapController.passedCheckpoints != TileManager.checkpoints.length)
-      if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(Slidewave.playerCar.lapController.passedCheckpoints)))
+    if (Slidewave.playerCar.lapController.passedCheckpoints != -1 && Slidewave.playerCar.lapController.passedCheckpoints != TileManager.checkpoints.length) {
+      if (TileManager.isCarOverCheckpoint(TileManager.checkpoints(Slidewave.playerCar.lapController.passedCheckpoints))) {
         Slidewave.playerCar.wentOverCheckpoint(Slidewave.playerCar.lapController.passedCheckpoints)
+      }
+    }
 
     // -----------------------------------------------------------------------
     // 5) Physics & car controls
@@ -236,7 +239,6 @@ class SlidewaveWindow extends PortableApplication(Slidewave.screenWidth, Slidewa
     // -----------------------------------------------------------------------
     // 6) Debug overlays (FPS, lap time, etc.)
     // -----------------------------------------------------------------------
-
     // FPS
     g.setColor(Color.BLACK)
     g.drawString(
