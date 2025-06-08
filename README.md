@@ -11,7 +11,7 @@ Le but de ce jeu serait de apprendre à simuler des vraies mécaniques dans un j
 - Gestion des temps (+ checkpoints) / Sauvegarde meilleurs scores ✅
 - Minimap ✅
 - Main menu ✅
-- Course d'obstacles ✅
+- Course d'obstacles
 
 **Bonus:**
 - Fantôme (course contre la montre de son propre meilleur score)
